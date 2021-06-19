@@ -1,0 +1,164 @@
+
+
+unit UntRepositorioTecAgricula;
+
+interface
+
+uses
+  uTecAgricula,  SysUtils, dbclient;
+
+type
+  TRepositorioTecAgricula = class
+    public
+      procedure Insert(pTecAgricula: TTecAgricula);
+      procedure Update(pTecAgricula: TTecAgricula);
+      procedure Delete(pTecAgricula: TTecAgricula);
+      function  getTecAgricula(pCPF: string): TTecAgricula;
+
+  end;
+
+implementation
+
+                                                                                                                               
+function TRepositorioTecAgricula.getTecAgricula(pCPF: string): TTecAgricula;
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  Result := nil;                                                                                               
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'SELECT * FROM TEC_AGRICULA ' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+      ParamByName('CPF'                                   ).AsString          := pCPF;
+      try                                                                                                                              
+        Open;                                                                                                                          
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioTecAgricula', 'getTecAgricula', LQry, E);  
+          raise Exception.Create('Erro ao consultar TecAgricula' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+                                                                                                                                      
+      if IsEmpty then                                                                                                                  
+        raise Exception.Create('TecAgricula inexistente!');                                                 
+                                                                                                                                      
+      Result := TTecAgricula.Create;                                                                                       
+
+      Result.CPF := LQry.FieldByName('CPF').AsString;
+      Result.NOME := LQry.FieldByName('NOME').AsString;
+      Result.NUMREGISTRO := LQry.FieldByName('NUM_REGISTRO').AsString;
+      Result.LoadProperts(TTecAgricula);                                                                                  
+    finally                                                                                                                           
+      Free;                                                                                                                           
+    end;                                                                                                                              
+  end;                                                                                                                                
+end;                                                                                                                           
+
+
+
+                                                                                                                               
+procedure TRepositorioTecAgricula.Insert(pTecAgricula: TTecAgricula);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                            
+                                                                                                              
+  with LQry do                                                                                                 
+  begin                                                                                                       
+    try                                                                                                       
+      SQL.Text := 'INSERT INTO TEC_AGRICULA(CPF                                               , ' + #13#10 + 
+                  '                        NOME                                              , ' + #13#10 + 
+                  '                        NUM_REGISTRO) ' + #13#10 + 
+                  'VALUES (:CPF                                               , ' + #13#10 + 
+                  '        :NOME                                              , ' + #13#10 + 
+                  '        :NUM_REGISTRO                                      ) '; 
+
+      ParamByName('CPF'                                   ).AsString          := pTecAgricula.CPF;
+      ParamByName('NOME'                                  ).AsString          := pTecAgricula.NOME;
+      ParamByName('NUM_REGISTRO'                          ).AsString          := pTecAgricula.NUMREGISTRO;
+
+      try                                                                                                                              
+        p_ExecutaSql(LQry, Self.FFormulario, Self.FUsuario, Self.FLog);                                                                  
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioTecAgricula', 'Insert', LQry, E);                 
+          raise Exception.Create('Erro ao inserir TecAgricula' + #13#13 + E.Message);                        
+        end;                                                                                                                           
+      end;                                                                                                                             
+    finally                                                                                                                            
+      Free;                                                                                                                            
+    end;                                                                                                                               
+  end;                                                                                                                               
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioTecAgricula.Update(pTecAgricula: TTecAgricula);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+                                                                                                               
+      SQL.Text := 'UPDATE TEC_AGRICULA SET ' + #13#10 +                          
+                  '  NOME = :NOME,' + #13#10 + 
+                  '  NUM_REGISTRO = :NUM_REGISTRO' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+
+      ParamByName('NOME').AsString          := pTecAgricula.NOME;
+      ParamByName('NUM_REGISTRO').AsString          := pTecAgricula.NUMREGISTRO;
+
+      try                                                                                                                              
+        p_ExecutaSqlUpdate(LQry, Self.FFormulario, Self.FUsuario, Self.FLog, pTecAgricula.ArrProp);                         
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioTecAgricula', 'Update', LQry, E);                 
+          raise Exception.Create('Erro ao atualizar TecAgricula' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+    finally                                                                                                                            
+      Free;                                                                                                                            
+    end;                                                                                                                               
+  end;                                                                              
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioTecAgricula.Delete(pTecAgricula: TTecAgricula);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'DELETE FROM TEC_AGRICULA ' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+      ParamByName('CPF'                                   ).AsString          := pTecAgricula.CPF;
+
+      try                                                                                                                
+        p_ExecutaSql(LQry, Self.FFormulario, Self.FUsuario, Self.FLog);                                                   
+      except                                                                                                             
+        on E : Exception do                                                                                              
+        begin                                                                                                            
+          g_GravaLogErros('UntRepositorioTecAgricula', 'Delete', LQry, E);   
+          raise Exception.Create('Erro ao excluir TecAgricula!' + #13#13 + E.Message);      
+        end;                                                                                                             
+      end;                                                                                                               
+    finally                                                                                                               
+      Free;                                                                                                               
+    end;                                                                                                                  
+  end;                                                                                                                    
+end;                                                                                                                           
+                                                                                                                               
+end.                                                                                                  

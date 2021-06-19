@@ -1,0 +1,59 @@
+unit uProduto;
+
+interface
+
+
+
+type
+  TProduto = class
+  strict private
+
+    FCODIGO    : String;
+    FCONTROLE  : String;
+    FPRECO     : double;
+    FDESCRICAO : string;
+
+    procedure SetCodigo(val : String);
+    function GetCodigo : String;
+
+    procedure SetControle(val : String);
+    function GetControle : String;
+
+    procedure SetPreco(val : double);
+    function GetPreco : double;
+
+    procedure SetDescricao(val : String);
+    function GetDescricao : String;
+
+  public
+
+     property CODIGO : String read GetCodigo write SetDocumento;
+     property CONTROLE : String read GetControle write SetDocumento;
+     property PRECO : String read GetPreco write SetDocumento;
+     property DESCRICAO : String read GetDescricao write SetDocumento;
+
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+implementation
+
+
+
+
+
+
+
+constructor TProduto.Create;
+begin
+	inherited Create;
+
+end;
+
+destructor TProduto.Destroy;
+begin
+
+	inherited Destroy;
+end;
+
+end.

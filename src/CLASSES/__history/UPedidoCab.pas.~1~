@@ -1,0 +1,50 @@
+{
+ -------------------------------------------------------------------------------
+ -- Objetivo....: Classe básica de PedidoCab
+ -- Autor.......: Jeferson Brizola
+ -------------------------------------------------------------------------------
+}
+
+
+unit UPedidoCab;
+
+interface
+
+uses Classes, UntObjetoBasico;
+
+type
+  TPedidoCab = class(TObjetoBasico)
+  private
+    FPRECO_TOTAL                    : string          ;
+    FCLIENTE_CPF                    : string          ;
+    FSTATUS                         : integer         ;
+    FDT_EMISSAO                     : string          ;
+    FNUM_PEDIDO                     : integer         ;
+  public
+    procedure LoadFields; override;
+  published
+    property PRECOTOTAL                               : string          read FPRECO_TOTAL                    write FPRECO_TOTAL                    ; //  (PEDIDO_CAB.PRECO_TOT)
+    property CLIENTECPF                               : string          read FCLIENTE_CPF                    write FCLIENTE_CPF                    ; //  (PEDIDO_CAB.CLIENTE_C)
+    property STATUS                                   : integer         read FSTATUS                         write FSTATUS                         ; //  (PEDIDO_CAB.STATUS)
+    property DTEMISSAO                                : string          read FDT_EMISSAO                     write FDT_EMISSAO                     ; //  (PEDIDO_CAB.DT_EMISSA)
+    property NUMPEDIDO                                : integer         read FNUM_PEDIDO                     write FNUM_PEDIDO                     ; //  (PEDIDO_CAB.NUM_PEDID)
+  end;
+
+implementation
+
+{ TPedidoCab }
+
+procedure TPedidoCab.LoadFields;
+begin
+  AddProperty('PRECOTOTAL'                             , 'PRECO_TOTAL'                            );
+  AddProperty('CLIENTECPF'                             , 'CLIENTE_CPF'                            );
+  AddProperty('STATUS'                                 , 'STATUS'                                 );
+  AddProperty('DTEMISSAO'                              , 'DT_EMISSAO'                             );
+  AddProperty('NUMPEDIDO'                              , 'NUM_PEDIDO'                             );
+end;
+
+initialization
+  RegisterClass(TPedidoCab); 
+finalization
+  UnRegisterClass(TPedidoCab); 
+end.

@@ -1,0 +1,137 @@
+unit uCliente;
+
+interface
+
+uses
+  uTelefone, uEndereco;
+
+type
+  TCliente = class
+  strict private
+    FNome:string;
+    FDocumento:String;
+    FDataCadastro:TDatetime;
+    FID:Integer;
+    FEnderecos:TListaEndereco;
+    FTelefones:TListaTelefone;
+    procedure SetTelefones(val : TListaTelefone);
+    function GetTelefones : TListaTelefone;
+    procedure SetEnderecos(val : TlistaEndereco);
+    function GetEnderecos : TlistaEndereco;
+    procedure SetNome(val : String);
+    function GetNome : String;
+    procedure SetID(val : Integer);
+    function GetID : Integer;
+    procedure SetDocumento(val : String);
+    function GetDocumento : String;
+    procedure SetDataCadastro(val : TDatetime);
+    function GetDataCadastro : TDatetime;
+
+  public
+    property DataCadastro : TDatetime read GetDataCadastro write SetDataCadastro;
+    property Documento : String read GetDocumento write SetDocumento;
+    property ID :  Integer read GetID write SetID;
+    property Nome :  String read GetNome write SetNome;
+    function ValidaDocumento(documento : string): boolean;
+    property Enderecos : TlistaEndereco read GetEnderecos write SetEnderecos;
+    property Telefones : TListaTelefone read GetTelefones write SetTelefones;
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+implementation
+
+function TCliente.GetDataCadastro: TDatetime;
+begin
+  Result := FDataCadastro;
+end;
+
+procedure TCliente.SetDataCadastro(val : TDatetime);
+begin
+  FDataCadastro := val;
+end;
+
+function TCliente.GetDocumento: String;
+begin
+  Result := FDocumento;
+end;
+
+procedure TCliente.SetDocumento(val : String);
+begin
+  FDocumento := val;
+end;
+
+function TCliente.GetID: Integer;
+begin
+  Result := FID;
+end;
+
+procedure TCliente.SetID(val : Integer);
+begin
+  FID := val;
+end;
+
+function TCliente.GetNome: String;
+begin
+  Result := FNome;
+end;
+
+procedure TCliente.SetNome(val : String);
+begin
+  FNome := val;
+end;
+
+function TCliente.ValidaDocumento(documento : string): boolean;
+begin
+  Result := false;
+  if Length(documento) > 14 then
+  begin
+    //é um CNPJ
+    if documento <> '' then
+      Result := true;
+  end
+  else
+  begin
+    //é um CPF
+    if documento <> '' then
+      Result := true;
+  end;  
+  
+
+end;
+
+function TCliente.GetEnderecos: TlistaEndereco;
+begin
+  Result := FEnderecos;
+end;
+
+procedure TCliente.SetEnderecos(val : TlistaEndereco);
+begin
+  FEnderecos := val;
+end;
+
+function TCliente.GetTelefones: TListaTelefone;
+begin
+  Result := FTelefones;
+end;
+
+procedure TCliente.SetTelefones(val : TListaTelefone);
+begin
+  FTelefones := val;
+end;
+
+constructor TCliente.Create;
+begin
+	inherited Create;
+  FEnderecos := TListaEndereco.Create;
+  FTelefones := TListaTelefone.Create;
+end;
+
+destructor TCliente.Destroy;
+begin
+  FEnderecos.Free;
+  FTelefones.Free;
+	inherited Destroy;
+end;
+
+end.

@@ -1,0 +1,96 @@
+{
+ -------------------------------------------------------------------------------
+
+ -- Unit........: UuCtrlCliente
+ -- Objetivo....: Classe de regra de negocio de objetos TCliente
+ -- Autor.......: Jeferson Brizola
+}
+
+
+
+unit UntCadastroCliente;
+
+interface
+
+uses Classes, SysUtils, UntUsuario, UntRepositorioCliente, UntCliente;
+
+type
+  TCadastroCliente = class
+  private
+    function ValidaDados(pCliente: TCliente):boolean; 
+  public
+    procedure Insert(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pCliente: TCliente);
+    procedure Update(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pCliente: TCliente);
+    procedure Delete(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pCliente: TCliente);
+  end; 
+
+implementation 
+                                                                                                      
+{ TCadastroCliente } 
+                                                                                                      
+function TCadastroCliente.ValidaDados(pCliente: TCliente):boolean; 
+begin                                                                                                 
+  Result := true;                                                                                     
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroCliente.Insert(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pCliente: TCliente);                                                
+begin                                                                                                 
+  if ValidaDados(pCliente) then                                                       
+  begin                                                                                               
+    with TRepositorioCliente.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Insert(pCliente);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroCliente.Update(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pCliente: TCliente);                                                
+begin                                                                                                 
+  if ValidaDados(pCliente) then                                                       
+  begin                                                                                               
+    with TRepositorioCliente.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Update(pCliente);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroCliente.Delete(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pCliente: TCliente);                                                
+begin                                                                                                 
+  if ValidaDados(pCliente) then                                                       
+  begin                                                                                               
+    with TRepositorioCliente.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Delete(pCliente);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+end.                                                                                                  

@@ -1,0 +1,250 @@
+unit uRepCliente;
+
+interface
+
+uses
+  uCliente,  SysUtils, dbclient;
+
+type
+  TRepCliente = class
+
+  public
+    constructor create;
+    destructor destroy; override;
+    function getCliente(Id : integer): TCliente; overload;
+    function getCliente(nome : string): TClientDataSet; overload;
+    procedure Insert(Cliente:TCliente);
+    procedure Update(Cliente:TCliente);
+    procedure Delete(Cliente:TCliente);
+
+  end;
+
+implementation
+
+uses SqlExpr, DB;
+
+function TRepCliente.ConsultaCliente(Id : integer): TCliente;
+var
+  sql : TSQLDataSet;
+begin
+  try
+    Sql := TSQLDataSet.Create(nil);
+    DM := TDM.Create(nil);
+    sql.SQLConnection := DM.conexao;
+    with sql do
+    begin
+      Close;
+      CommandText := 'select * from cliente where id = :ClienteId';
+      ParamByName('ClienteId').AsInteger := Id;
+      Open;
+      First;
+      while not eof do
+      begin
+        Result := TCliente.Create;
+        Result.ID := FieldByName('ID').AsInteger;
+        Result.Nome := FieldByName('Nome').AsString;
+        Result.Documento := FieldByName('Documento').AsString;
+        Result.DataCadastro := FieldByName('DataCadastro').AsDateTime;
+        Result.Enderecos := ConsultarEndereco(Result.id);
+        Result.Telefones := ConsultarTelefone(Result.ID);
+        Next;
+      end;
+    end;
+  finally
+    sql.Free;
+  end;
+end;
+
+procedure TRepCliente.SalvarCliente(Cliente:TCliente);
+var
+  sql : TSQLDataSet;
+  I: Integer;
+  trans  : TTransactionDesc;
+begin
+  try
+    try
+      //Atribui uma identificação para transação
+
+      trans.TransactionID := 1;
+      trans.IsolationLevel :=  xilREADCOMMITTED;
+
+      //Inicia a transação
+      DM := TDM.Create(nil);
+      DM.conexao.StartTransaction(trans);
+      Sql := TSQLDataSet.Create(nil);
+      sql.SQLConnection := DM.conexao;
+      with sql do
+      begin
+        Close;
+        CommandText := 'insert into CLIENTE (Id, DataCadastro, Nome, Documento) '+
+                        ' values (:Id, :Data, :Nome, :Documento)';
+        ParamByName('Id').AsInteger := Cliente.ID;
+        ParamByName('Data').AsDate := Cliente.DataCadastro;
+        ParamByName('Nome').AsString := Cliente.Nome;
+        ParamByName('Documento').AsString := Cliente.Documento;
+        ExecSQL;
+      end;
+      for I := 0 to Cliente.Enderecos.Contar - 1 do
+        SalvarEndereco(TEndereco(Cliente.Enderecos.getItem(I)),Cliente.ID);
+      for I := 0 to Cliente.Telefones.Contar - 1 do
+        SalvarTelefone(TTelefone(Cliente.Telefones.getItem(I)),Cliente.ID);
+      //Transação com sucesso!
+      DM.conexao.Commit(trans);
+
+    except on E: Exception do
+      begin
+        DM.conexao.Rollback(trans);
+        raise E.Create('Ocorreu um erro no Salvar Clientes!');
+      end;
+    end;
+  finally
+    sql.Free;
+  end;
+end;
+
+procedure TRepCliente.AtualizarCliente(Cliente:TCliente);
+var
+  sql : TSQLDataSet;
+  I: Integer;
+  trans  : TTransactionDesc;
+begin
+  try
+    try
+      //Atribui uma identificação para transação
+      trans.TransactionID := 1;
+      trans.IsolationLevel :=  xilREADCOMMITTED;
+      //Inicia a transação
+      DM.conexao.StartTransaction(trans);
+      Sql := TSQLDataSet.Create(nil);
+      sql.SQLConnection := DM.conexao;
+      with Sql do
+      begin
+        Close;
+        CommandText := 'update cliente set DataCadastro= :Data, '+
+                       'Nome= :Nome, Documento= :Documento where '+
+                       'Id= :Id';
+        ParamByName('Data').AsDateTime := Cliente.DataCadastro;
+        ParamByName('Nome').AsString := Cliente.Nome;
+        ParamByName('Documento').AsString := Cliente.Documento;
+        ParamByName('Id').AsInteger := Cliente.ID;
+        ExecSQL;
+      end;
+      for I := 0 to Cliente.Enderecos.Contar - 1 do
+        AtualizarEndereco(TEndereco(Cliente.Enderecos.getItem(I)));
+      for I := 0 to Cliente.Telefones.Contar - 1 do
+        AtualizarTelefone(TTelefone(Cliente.Telefones.getItem(I)));
+      //Transação com sucesso!
+      DM.conexao.Commit(trans);
+
+    except on E: Exception do
+      begin
+        DM.conexao.Rollback(trans);
+        raise E.Create('Ocorreu um erro no Atualizar Clientes!');
+      end;
+    end;
+  finally
+    sql.Free;
+  end;
+end;
+
+procedure TRepCliente.ExcluirCliente(Cliente:TCliente);
+var
+  sql : TSQLDataSet;
+  I: Integer;
+  trans  : TTransactionDesc;
+begin
+  try
+    try
+      //Atribui uma identificação para transação
+      trans.TransactionID := 1;
+      trans.IsolationLevel :=  xilREADCOMMITTED;
+      //Inicia a transação
+      DM.conexao.StartTransaction(trans);
+      Sql := TSQLDataSet.Create(nil);
+      sql.SQLConnection := DM.conexao;
+      with Sql do
+      begin
+        Close;
+        CommandText := 'delete from cliente where Id= :Id';
+        ParamByName('Id').AsInteger := Cliente.ID;
+        ExecSQL;
+      end;
+      //Transação com sucesso!
+      DM.conexao.Commit(trans);
+
+    except on E: Exception do
+      begin
+        DM.conexao.Rollback(trans);
+        raise E.Create('Ocorreu um erro no Excluir Clientes!');
+      end;
+    end;
+  finally
+    sql.Free;
+  end;
+end;
+
+
+
+function TRepCliente.ConsultaCliente(nome: string): TClientDataSet; //Marreta
+var
+  sql : TSQLDataSet;
+  cliente : TCliente;
+begin
+  try
+    DM := TDM.Create(nil);
+    Sql := TSQLDataSet.Create(nil);
+    sql.SQLConnection := DM.conexao;
+
+    Result := TClientDataSet.Create(nil);
+    Result.FieldDefs.Clear;
+    Result.FieldDefs.Add('Id',ftInteger);
+    Result.FieldDefs.Add('Nome',ftstring,60);
+    Result.FieldDefs.Add('Documento',ftstring,18);
+    Result.FieldDefs.Add('DataCadastro',ftDate);
+    Result.CreateDataSet;    
+    with sql do
+    begin
+      Close;
+      CommandText := 'select * from cliente where nome like :nome';
+      ParamByName('nome').AsString := nome + '%';
+      Open;
+      First;
+      while not eof do
+      begin
+        Result.Append;
+        Result.FieldByName('ID').AsInteger := FieldByName('ID').AsInteger;
+        Result.FieldByName('Nome').AsString := FieldByName('Nome').AsString;
+        Result.FieldByName('Documento').AsString := FieldByName('Documento').AsString;
+        Result.FieldByName('DataCadastro').AsDateTime := FieldByName('DataCadastro').AsDateTime;
+        Result.Post;
+        Next;
+      end;
+    end;
+  finally
+    sql.Free;
+  end;
+
+end;
+
+
+
+
+
+
+constructor TRepCliente.create;
+begin
+
+end;
+
+destructor TRepCliente.destroy;
+begin
+
+  inherited;
+end;
+
+
+
+
+
+
+end.

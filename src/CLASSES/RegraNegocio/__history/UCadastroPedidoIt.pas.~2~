@@ -1,0 +1,95 @@
+{
+ -------------------------------------------------------------------------------
+ -- Objetivo....: Classe de regra de negocio de objetos TPedidoIt
+ -- Autor.......: Jeferson Brizola
+ -------------------------------------------------------------------------------
+}
+
+
+
+unit UCadastroPedidoIt;
+
+interface
+
+uses Classes, SysUtils, URepositorioPedidoIt, UPedidoIt;
+
+type
+  TCadastroPedidoIt = class
+  private
+    function ValidaDados(pPedidoIt: TPedidoIt):boolean; 
+  public
+    procedure Insert(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pPedidoIt: TPedidoIt);
+    procedure Update(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pPedidoIt: TPedidoIt);
+    procedure Delete(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pPedidoIt: TPedidoIt);
+  end; 
+
+implementation 
+                                                                                                      
+{ TCadastroPedidoIt } 
+                                                                                                      
+function TCadastroPedidoIt.ValidaDados(pPedidoIt: TPedidoIt):boolean; 
+begin                                                                                                 
+  Result := true;                                                                                     
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroPedidoIt.Insert(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pPedidoIt: TPedidoIt);                                                
+begin                                                                                                 
+  if ValidaDados(pPedidoIt) then                                                       
+  begin                                                                                               
+    with TRepositorioPedidoIt.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Insert(pPedidoIt);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroPedidoIt.Update(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pPedidoIt: TPedidoIt);                                                
+begin                                                                                                 
+  if ValidaDados(pPedidoIt) then                                                       
+  begin                                                                                               
+    with TRepositorioPedidoIt.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Update(pPedidoIt);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroPedidoIt.Delete(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pPedidoIt: TPedidoIt);                                                
+begin                                                                                                 
+  if ValidaDados(pPedidoIt) then                                                       
+  begin                                                                                               
+    with TRepositorioPedidoIt.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Delete(pPedidoIt);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+end.                                                                                                  

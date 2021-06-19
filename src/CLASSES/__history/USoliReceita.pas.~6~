@@ -1,0 +1,76 @@
+unit USoliReceita;
+
+interface
+
+type
+  TSoliReceita = class
+  strict private
+    FNUM_REGISTRO: string;
+    FNUM_PEDIDO: integer;
+    FCOD_PRODUTO: string;
+
+    procedure SetNUMREGISTRO(val: string);
+    function GetNUMREGISTRO: string;
+
+    procedure SetNUMPEDIDO(val: integer);
+    function GetNUMPEDIDO: integer;
+
+    procedure SetCODPRODUTO(val: string);
+    function GetCODPRODUTO: string;
+
+  public
+    property NUMREGISTRO: string read FNUM_REGISTRO write FNUM_REGISTRO;
+    property NUMPEDIDO: integer read FNUM_PEDIDO write FNUM_PEDIDO;
+    property CODPRODUTO: string read FCOD_PRODUTO write FCOD_PRODUTO;
+
+    constructor Create;
+    destructor Destroy; override;
+
+  end;
+
+implementation
+
+{ TSoliReceita }
+
+constructor TSoliReceita.Create;
+begin
+  inherited Create;
+end;
+
+destructor TSoliReceita.Destroy;
+begin
+
+  inherited Destroy;
+end;
+
+function TSoliReceita.GetCODPRODUTO: string;
+begin
+  Result := FCOD_PRODUTO;
+end;
+
+function TSoliReceita.GetNUMPEDIDO: integer;
+begin
+  Result := FNUM_PEDIDO;
+end;
+
+function TSoliReceita.GetNUMREGISTRO: string;
+begin
+  Result := FNUM_REGISTRO;
+end;
+
+procedure TSoliReceita.SetCODPRODUTO(val: string);
+begin
+  FCOD_PRODUTO := val;
+end;
+
+procedure TSoliReceita.SetNUMPEDIDO(val: integer);
+begin
+  FNUM_PEDIDO := val;
+end;
+
+procedure TSoliReceita.SetNUMREGISTRO(val: string);
+begin
+  FNUM_REGISTRO := val;
+end;
+
+end.

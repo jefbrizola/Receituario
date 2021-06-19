@@ -1,0 +1,285 @@
+{
+ -------------------------------------------------------------------------------
+ -- Objetivo....: Classe de persistência de objetos TPedidoIt
+ -- Autor.......: Jeferson Brizola
+ -------------------------------------------------------------------------------
+}
+
+
+unit UntRepositorioPedidoIt;
+
+interface
+
+uses Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
+  FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Comp.Client, FireDAC.Comp.DataSet,
+  FireDAC.Stan.Param, SysUtils, UntErros, UntBase, UntUsuario, UntRecurso,
+  FC.Base.Collection, UntPedidoIt;
+
+type
+  TRepositorioPedidoIt = class(TBase)
+    public
+      procedure Insert(pPedidoIt: TPedidoIt);
+      procedure Update(pPedidoIt: TPedidoIt);
+      procedure Delete(pPedidoIt: TPedidoIt);
+      function  getPedidoIt(pNUMPEDIDO, pPRODUTO: integer): TPedidoIt;
+      function  getPedidoIts(pNUMPEDIDO, pPRODUTO: integer): TApplyCollection;
+      function  getPedidoItList(pNUMPEDIDO, pPRODUTO: integer): IFCList<TPedidoIt>;
+  end;
+
+implementation
+
+
+function TRepositorioPedidoIt.getPedidoIt(pNUMPEDIDO, pPRODUTO: integer): TPedidoIt; 
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  Result := nil;                                                                                               
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'SELECT * FROM PEDIDO_IT ' + #13#10 + 
+                 'WHERE NUM_PEDIDO = :NUM_PEDIDO'                   + #13#10 + 
+                 'AND   PRODUTO = :PRODUTO'                        ;
+
+      ParamByName('NUM_PEDIDO'                            ).AsInteger         := pNUMPEDIDO;
+      ParamByName('PRODUTO'                               ).AsInteger         := pPRODUTO;
+      try                                                                                                                              
+        Open;                                                                                                                          
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioPedidoIt', 'getPedidoIt', LQry, E);  
+          raise Exception.Create('Erro ao consultar PedidoIt' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+                                                                                                                                      
+      if IsEmpty then                                                                                                                  
+        raise Exception.Create('PedidoIt inexistente!');                                                 
+                                                                                                                                      
+      Result := TPedidoIt.Create;                                                                                       
+
+      Result.PRECOUNIT := LQry.FieldByName('PRECO_UNIT').AsString;
+      Result.NUMPEDIDO := LQry.FieldByName('NUM_PEDIDO').AsInteger;
+      Result.PRODUTO := LQry.FieldByName('PRODUTO').AsInteger;
+      Result.QTD := LQry.FieldByName('QTD').AsFloat;
+      Result.LoadProperts(TPedidoIt);                                                                                  
+    finally                                                                                                                           
+      Free;                                                                                                                           
+    end;                                                                                                                              
+  end;                                                                                                                                
+end;                                                                                                                           
+                                                                                                                               
+function TRepositorioPedidoIt.getPedidoIts(pNUMPEDIDO, pPRODUTO: integer): TApplyCollection;
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  Result := nil;                                                                                               
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'SELECT * FROM PEDIDO_IT ' + #13#10 + 
+                 'WHERE NUM_PEDIDO = :NUM_PEDIDO'                   + #13#10 + 
+                 'AND   PRODUTO = :PRODUTO'                        ;
+
+     ParamByName('NUM_PEDIDO'                            ).AsInteger         := pNUMPEDIDO;
+     ParamByName('PRODUTO'                               ).AsInteger         := pPRODUTO;
+
+      try                                                                                                                              
+        Open;                                                                                                                          
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioPedidoIt', 'getPedidoIt', LQry, E);  
+          raise Exception.Create('Erro ao consultar PedidoIt' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+                                                                                                                                       
+      if IsEmpty then                                                                                                                  
+        raise Exception.Create('PedidoIt inexistente!');                                                 
+                                                                                                                                       
+      while not(LQry.Eof) do                                                                                                            
+      begin                                                                                                                            
+        SetLength(Result, Length(Result)+1);                                                                                           
+        Result[High(Result)]     := TApplyCollectionObject.Create;                                                                     
+        Result[High(Result)].Obj := TPedidoIt.Create;                                                                   
+                                                                                                                                       
+        (Result[High(Result)].Obj as TPedidoIt).PRECOUNIT := LQry.FieldByName('PRECO_UNIT').AsString;
+        (Result[High(Result)].Obj as TPedidoIt).NUMPEDIDO := LQry.FieldByName('NUM_PEDIDO').AsInteger;
+        (Result[High(Result)].Obj as TPedidoIt).PRODUTO := LQry.FieldByName('PRODUTO').AsInteger;
+        (Result[High(Result)].Obj as TPedidoIt).QTD := LQry.FieldByName('QTD').AsFloat;
+                                                                                                                                      
+        (Result[High(Result)].Obj as TPedidoIt).LoadProperts(TPedidoIt);                                
+
+        LQry.Next;                                                                                                                     
+      end;                                                                                                                            
+
+    finally                                                                                                                           
+      Free;                                                                                                                           
+    end;                                                                                                                              
+  end;
+end;                                                                                                                           
+                                                                                                                               
+function TRepositorioPedidoIt.getPedidoItList(pNUMPEDIDO, pPRODUTO: integer): IFCList<TPedidoIt>;
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+  LPedidoIt: TPedidoIt;
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                              
+                                                                                                               
+  Result := nil;                                                                                               
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'SELECT * FROM PEDIDO_IT ' + #13#10 + 
+                 'WHERE NUM_PEDIDO = :NUM_PEDIDO'                   + #13#10 + 
+                 'AND   PRODUTO = :PRODUTO'                        ;
+
+      ParamByName('NUM_PEDIDO'                            ).AsInteger         := pNUMPEDIDO;
+      ParamByName('PRODUTO'                               ).AsInteger         := pPRODUTO;
+
+      try                                                                                                                              
+        Open;                                                                                                                          
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioPedidoIt', 'getPedidoIt', LQry, E);  
+          raise Exception.Create('Erro ao consultar PedidoIt' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+                                                                                                                                       
+      if IsEmpty then                                                                                                                  
+        raise Exception.Create('PedidoIt inexistente!');                                                 
+                                                                                                                                       
+      Result := TFCCollection<TPedidoIt>.Create;                                                                        
+      while not(LQry.Eof) do                                                                                                            
+      begin                                                                                                                            
+        LPedidoIt := TPedidoIt.Create;                                                                    
+                                                                                                                                       
+        LPedidoIt.PRECOUNIT := LQry.FieldByName('PRECO_UNIT').AsString;
+        LPedidoIt.NUMPEDIDO := LQry.FieldByName('NUM_PEDIDO').AsInteger;
+        LPedidoIt.PRODUTO := LQry.FieldByName('PRODUTO').AsInteger;
+        LPedidoIt.QTD := LQry.FieldByName('QTD').AsFloat;
+                                                                                                                                      
+        Result.Add(LPedidoIt);
+
+        LQry.Next;                                                                                                                      
+      end;                                                                                                                             
+
+    finally                                                                                                                           
+      Free;                                                                                                                           
+    end;                                                                                                                              
+  end;
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioPedidoIt.Insert(pPedidoIt: TPedidoIt);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                            
+                                                                                                              
+  with LQry do                                                                                                 
+  begin                                                                                                       
+    try                                                                                                       
+      SQL.Text := 'INSERT INTO PEDIDO_IT(PRECO_UNIT                                        , ' + #13#10 + 
+                  '                        NUM_PEDIDO                                        , ' + #13#10 + 
+                  '                        PRODUTO                                           , ' + #13#10 + 
+                  '                        QTD) ' + #13#10 + 
+                  'VALUES (:PRECO_UNIT                                        , ' + #13#10 + 
+                  '        :NUM_PEDIDO                                        , ' + #13#10 + 
+                  '        :PRODUTO                                           , ' + #13#10 + 
+                  '        :QTD                                               ) '; 
+
+      ParamByName('PRECO_UNIT'                            ).AsString          := pPedidoIt.PRECOUNIT;
+      ParamByName('NUM_PEDIDO'                            ).AsInteger         := pPedidoIt.NUMPEDIDO;
+      ParamByName('PRODUTO'                               ).AsInteger         := pPedidoIt.PRODUTO;
+      ParamByName('QTD'                                   ).AsFloat           := pPedidoIt.QTD;
+
+      try                                                                                                                              
+        p_ExecutaSql(LQry, Self.FFormulario, Self.FUsuario, Self.FLog);                                                                  
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioPedidoIt', 'Insert', LQry, E);                 
+          raise Exception.Create('Erro ao inserir PedidoIt' + #13#13 + E.Message);                        
+        end;                                                                                                                           
+      end;                                                                                                                             
+    finally                                                                                                                            
+      Free;                                                                                                                            
+    end;                                                                                                                               
+  end;                                                                                                                               
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioPedidoIt.Update(pPedidoIt: TPedidoIt);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+                                                                                                               
+      SQL.Text := 'UPDATE PEDIDO_IT SET ' + #13#10 +                          
+                  '  PRECO_UNIT = :PRECO_UNIT,' + #13#10 + 
+                  '  QTD = :QTD' + #13#10 + 
+                 'WHERE NUM_PEDIDO = :NUM_PEDIDO'                   + #13#10 + 
+                 'AND   PRODUTO = :PRODUTO'                        ;
+
+
+      ParamByName('PRECO_UNIT').AsString          := pPedidoIt.PRECOUNIT;
+      ParamByName('QTD').AsFloat           := pPedidoIt.QTD;
+
+      try                                                                                                                              
+        p_ExecutaSqlUpdate(LQry, Self.FFormulario, Self.FUsuario, Self.FLog, pPedidoIt.ArrProp);                         
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioPedidoIt', 'Update', LQry, E);                 
+          raise Exception.Create('Erro ao atualizar PedidoIt' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+    finally                                                                                                                            
+      Free;                                                                                                                            
+    end;                                                                                                                               
+  end;                                                                              
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioPedidoIt.Delete(pPedidoIt: TPedidoIt);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'DELETE FROM PEDIDO_IT ' + #13#10 + 
+                 'WHERE NUM_PEDIDO = :NUM_PEDIDO'                   + #13#10 + 
+                 'AND   PRODUTO = :PRODUTO'                        ;
+
+      ParamByName('NUM_PEDIDO'                            ).AsInteger         := pPedidoIt.NUMPEDIDO;
+      ParamByName('PRODUTO'                               ).AsInteger         := pPedidoIt.PRODUTO;
+
+      try                                                                                                                
+        p_ExecutaSql(LQry, Self.FFormulario, Self.FUsuario, Self.FLog);                                                   
+      except                                                                                                             
+        on E : Exception do                                                                                              
+        begin                                                                                                            
+          g_GravaLogErros('UntRepositorioPedidoIt', 'Delete', LQry, E);   
+          raise Exception.Create('Erro ao excluir PedidoIt!' + #13#13 + E.Message);      
+        end;                                                                                                             
+      end;                                                                                                               
+    finally                                                                                                               
+      Free;                                                                                                               
+    end;                                                                                                                  
+  end;                                                                                                                    
+end;                                                                                                                           
+                                                                                                                               
+end.                                                                                                  

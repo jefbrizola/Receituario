@@ -1,0 +1,49 @@
+
+unit UPedidoCab;
+
+interface
+
+
+type
+  TPedidoCab = class
+   strict private
+
+    FPRECO_TOTAL                    : double          ;
+    FCLIENTE_CPF                    : string          ;
+    FSTATUS                         : integer         ;
+    FDT_EMISSAO                     : string          ;
+    FNUM_PEDIDO                     : integer         ;
+
+    procedure SetPRECOTOTAL(val : String);
+    function GetPRECOTOTAL : String;
+
+  public
+
+    property PRECOTOTAL                               : string          read FPRECO_TOTAL                    write FPRECO_TOTAL                    ; //  (PEDIDO_CAB.PRECO_TOT)
+    property CLIENTECPF                               : string          read FCLIENTE_CPF                    write FCLIENTE_CPF                    ; //  (PEDIDO_CAB.CLIENTE_C)
+    property STATUS                                   : integer         read FSTATUS                         write FSTATUS                         ; //  (PEDIDO_CAB.STATUS)
+    property DTEMISSAO                                : string          read FDT_EMISSAO                     write FDT_EMISSAO                     ; //  (PEDIDO_CAB.DT_EMISSA)
+    property NUMPEDIDO                                : integer         read FNUM_PEDIDO                     write FNUM_PEDIDO                     ; //  (PEDIDO_CAB.NUM_PEDID)
+
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+implementation
+
+{ TPedidoCab }
+
+
+constructor TPedidoCab.Create;
+begin
+	inherited Create;
+
+end;
+
+destructor TPedidoCab.Destroy;
+begin
+
+	inherited Destroy;
+end;
+
+end.

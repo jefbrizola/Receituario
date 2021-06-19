@@ -1,0 +1,267 @@
+{
+ -------------------------------------------------------------------------------
+
+ -- Unit........: URepositorioCliente
+ -- Objetivo....: Classe de persistência de objetos TCliente
+ -- Autor.......: Jeferson Brizola
+
+ -------------------------------------------------------------------------------
+}
+
+
+
+unit UntRepositorioCliente;
+
+interface
+
+uses Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
+  FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Comp.Client, FireDAC.Comp.DataSet,
+  FireDAC.Stan.Param, SysUtils, UntErros, UntBase, UntUsuario, UntApplyCollection, UntRecurso, 
+  FC.Base.Collection, UntCliente;
+
+type
+  TRepositorioCliente = class(TBase)
+    public
+      procedure Insert(pCliente: TCliente);
+      procedure Update(pCliente: TCliente);
+      procedure Delete(pCliente: TCliente);
+      function  getCliente(pCPF: string): TCliente; 
+      function  getClientes(pCPF: string): TApplyCollection;
+      function  getClienteList(pCPF: string): IFCList<TCliente>;
+  end; 
+
+implementation 
+                                                                                                                               
+{ TRepositorioCliente } 
+                                                                                                                               
+function TRepositorioCliente.getCliente(pCPF: string): TCliente; 
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  Result := nil;                                                                                               
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'SELECT * FROM CLIENTE ' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+      ParamByName('CPF'                                   ).AsString          := pCPF;
+      try                                                                                                                              
+        Open;                                                                                                                          
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioCliente', 'getCliente', LQry, E);  
+          raise Exception.Create('Erro ao consultar Cliente' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+                                                                                                                                      
+      if IsEmpty then                                                                                                                  
+        raise Exception.Create('Cliente inexistente!');                                                 
+                                                                                                                                      
+      Result := TCliente.Create;                                                                                       
+
+      Result.NOME := LQry.FieldByName('NOME').AsString;
+      Result.CPF := LQry.FieldByName('CPF').AsString;
+      Result.LoadProperts(TCliente);                                                                                  
+    finally                                                                                                                           
+      Free;                                                                                                                           
+    end;                                                                                                                              
+  end;                                                                                                                                
+end;                                                                                                                           
+                                                                                                                               
+function TRepositorioCliente.getClientes(pCPF: string): TApplyCollection;
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  Result := nil;                                                                                               
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'SELECT * FROM CLIENTE ' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+     ParamByName('CPF'                                   ).AsString          := pCPF;
+
+      try                                                                                                                              
+        Open;                                                                                                                          
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioCliente', 'getCliente', LQry, E);  
+          raise Exception.Create('Erro ao consultar Cliente' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+                                                                                                                                       
+      if IsEmpty then                                                                                                                  
+        raise Exception.Create('Cliente inexistente!');                                                 
+                                                                                                                                       
+      while not(LQry.Eof) do                                                                                                            
+      begin                                                                                                                            
+        SetLength(Result, Length(Result)+1);                                                                                           
+        Result[High(Result)]     := TApplyCollectionObject.Create;                                                                     
+        Result[High(Result)].Obj := TCliente.Create;                                                                   
+                                                                                                                                       
+        (Result[High(Result)].Obj as TCliente).NOME := LQry.FieldByName('NOME').AsString;
+        (Result[High(Result)].Obj as TCliente).CPF := LQry.FieldByName('CPF').AsString;
+                                                                                                                                      
+        (Result[High(Result)].Obj as TCliente).LoadProperts(TCliente);                                
+
+        LQry.Next;                                                                                                                     
+      end;                                                                                                                            
+
+    finally                                                                                                                           
+      Free;                                                                                                                           
+    end;                                                                                                                              
+  end;
+end;                                                                                                                           
+                                                                                                                               
+function TRepositorioCliente.getClienteList(pCPF: string): IFCList<TCliente>;
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+  LCliente: TCliente;
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                              
+                                                                                                               
+  Result := nil;                                                                                               
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'SELECT * FROM CLIENTE ' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+      ParamByName('CPF'                                   ).AsString          := pCPF;
+
+      try                                                                                                                              
+        Open;                                                                                                                          
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioCliente', 'getCliente', LQry, E);  
+          raise Exception.Create('Erro ao consultar Cliente' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+                                                                                                                                       
+      if IsEmpty then                                                                                                                  
+        raise Exception.Create('Cliente inexistente!');                                                 
+                                                                                                                                       
+      Result := TFCCollection<TCliente>.Create;                                                                        
+      while not(LQry.Eof) do                                                                                                            
+      begin                                                                                                                            
+        LCliente := TCliente.Create;                                                                    
+                                                                                                                                       
+        LCliente.NOME := LQry.FieldByName('NOME').AsString;
+        LCliente.CPF := LQry.FieldByName('CPF').AsString;
+                                                                                                                                      
+        Result.Add(LCliente);
+
+        LQry.Next;                                                                                                                      
+      end;                                                                                                                             
+
+    finally                                                                                                                           
+      Free;                                                                                                                           
+    end;                                                                                                                              
+  end;
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioCliente.Insert(pCliente: TCliente);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                            
+                                                                                                              
+  with LQry do                                                                                                 
+  begin                                                                                                       
+    try                                                                                                       
+      SQL.Text := 'INSERT INTO CLIENTE(NOME                                              , ' + #13#10 + 
+                  '                        CPF) ' + #13#10 + 
+                  'VALUES (:NOME                                              , ' + #13#10 + 
+                  '        :CPF                                               ) '; 
+
+      ParamByName('NOME'                                  ).AsString          := pCliente.NOME;
+      ParamByName('CPF'                                   ).AsString          := pCliente.CPF;
+
+      try                                                                                                                              
+        p_ExecutaSql(LQry, Self.FFormulario, Self.FUsuario, Self.FLog);                                                                  
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioCliente', 'Insert', LQry, E);                 
+          raise Exception.Create('Erro ao inserir Cliente' + #13#13 + E.Message);                        
+        end;                                                                                                                           
+      end;                                                                                                                             
+    finally                                                                                                                            
+      Free;                                                                                                                            
+    end;                                                                                                                               
+  end;                                                                                                                               
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioCliente.Update(pCliente: TCliente);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+                                                                                                               
+      SQL.Text := 'UPDATE CLIENTE SET ' + #13#10 +                          
+                  '  NOME = :NOME' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+
+      ParamByName('NOME').AsString          := pCliente.NOME;
+
+      try                                                                                                                              
+        p_ExecutaSqlUpdate(LQry, Self.FFormulario, Self.FUsuario, Self.FLog, pCliente.ArrProp);                         
+      except                                                                                                                           
+        on E : Exception do                                                                                                            
+        begin                                                                                                                          
+          g_GravaLogErros('UntRepositorioCliente', 'Update', LQry, E);                 
+          raise Exception.Create('Erro ao atualizar Cliente' + #13#13 + E.Message);                      
+        end;                                                                                                                           
+      end;                                                                                                                             
+    finally                                                                                                                            
+      Free;                                                                                                                            
+    end;                                                                                                                               
+  end;                                                                              
+end;                                                                                                                           
+                                                                                                                               
+procedure TRepositorioCliente.Delete(pCliente: TCliente);
+var                                                                                                                          
+  LQry: TFDQuery;                                                                                                             
+begin                                                                                                                          
+  LQry := GetQuery;                                                                                             
+                                                                                                               
+  with LQry do                                                                                                  
+  begin                                                                                                        
+    try                                                                                                        
+      SQL.Text := 'DELETE FROM CLIENTE ' + #13#10 + 
+                 'WHERE CPF = :CPF'                                 ;
+
+      ParamByName('CPF'                                   ).AsString          := pCliente.CPF;
+
+      try                                                                                                                
+        p_ExecutaSql(LQry, Self.FFormulario, Self.FUsuario, Self.FLog);                                                   
+      except                                                                                                             
+        on E : Exception do                                                                                              
+        begin                                                                                                            
+          g_GravaLogErros('UntRepositorioCliente', 'Delete', LQry, E);   
+          raise Exception.Create('Erro ao excluir Cliente!' + #13#13 + E.Message);      
+        end;                                                                                                             
+      end;                                                                                                               
+    finally                                                                                                               
+      Free;                                                                                                               
+    end;                                                                                                                  
+  end;                                                                                                                    
+end;                                                                                                                           
+                                                                                                                               
+end.                                                                                                  

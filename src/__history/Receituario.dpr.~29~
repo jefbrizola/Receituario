@@ -1,0 +1,36 @@
+program Receituario;
+
+uses
+  Vcl.Forms,
+  UCadCliente in 'UCadCliente.pas' {FramCadClientes},
+  UfrmCadProduto in 'UfrmCadProduto.pas' {FrmCadProduto},
+  UPedidodeVenda in 'UPedidodeVenda.pas' {Form2},
+  uCliente in 'CLASSES\uCliente.pas',
+  uProduto in 'CLASSES\uProduto.pas',
+  uTecAgricula in 'CLASSES\uTecAgricula.pas',
+  uPedidoCab in 'CLASSES\uPedidoCab.pas',
+  USoliReceita in 'CLASSES\USoliReceita.pas',
+  uDM in 'uDM.pas' {DM: TDataModule},
+  uFrmPrincipal in 'uFrmPrincipal.pas' {FrmPrincipal},
+  uRepositorioCliente in 'CLASSES\Persistencia\uRepositorioCliente.pas',
+  uRepositorioTecAgricula in 'CLASSES\Persistencia\uRepositorioTecAgricula.pas',
+  uRepositorioProduto in 'CLASSES\Persistencia\uRepositorioProduto.pas',
+  uRepositorioPedidoCab in 'CLASSES\Persistencia\uRepositorioPedidoCab.pas',
+  uPedidoIt in 'CLASSES\uPedidoIt.pas',
+  uRepositorioPedidoIt in 'CLASSES\Persistencia\uRepositorioPedidoIt.pas',
+  uRepositorioSoliReceita in 'CLASSES\Persistencia\uRepositorioSoliReceita.pas',
+  UCadastroCliente in 'CLASSES\RegraNegocio\UCadastroCliente.pas',
+  UCadastroPedidoCab in 'CLASSES\RegraNegocio\UCadastroPedidoCab.pas',
+  UCadastroPedidoIt in 'CLASSES\RegraNegocio\UCadastroPedidoIt.pas',
+  UCadastroProduto in 'CLASSES\RegraNegocio\UCadastroProduto.pas',
+  UCadastroSoliReceita in 'CLASSES\RegraNegocio\UCadastroSoliReceita.pas',
+  UCadastroTecAgricula in 'CLASSES\RegraNegocio\UCadastroTecAgricula.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFrmPrincipal, FrmPrincipal);
+  Application.Run;
+end.

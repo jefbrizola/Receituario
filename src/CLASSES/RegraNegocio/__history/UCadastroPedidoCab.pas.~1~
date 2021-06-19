@@ -1,0 +1,101 @@
+{
+ -------------------------------------------------------------------------------
+ -- Projeto.....: SFC
+ -- Unit........: UntCadastroPedidoCab
+ -- Objetivo....: Classe de regra de negocio de objetos TPedidoCab
+ -- Autor.......: Jeferson Brizola
+ -- Data........: segunda-feira, 14 de junho de 2021
+ -- Classes.....: TCadastroPedidoCab, UntRepositorioPedidoCab, UntPedidoCab
+ -- Tabelas.....:
+ -- Procedures..:
+ -------------------------------------------------------------------------------
+}
+
+
+
+unit UntCadastroPedidoCab;
+
+interface
+
+uses Classes, SysUtils, UntUsuario, UntRepositorioPedidoCab, UntPedidoCab;
+
+type
+  TCadastroPedidoCab = class
+  private
+    function ValidaDados(pPedidoCab: TPedidoCab):boolean; 
+  public
+    procedure Insert(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pPedidoCab: TPedidoCab);
+    procedure Update(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pPedidoCab: TPedidoCab);
+    procedure Delete(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pPedidoCab: TPedidoCab);
+  end; 
+
+implementation 
+                                                                                                      
+{ TCadastroPedidoCab } 
+                                                                                                      
+function TCadastroPedidoCab.ValidaDados(pPedidoCab: TPedidoCab):boolean; 
+begin                                                                                                 
+  Result := true;                                                                                     
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroPedidoCab.Insert(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pPedidoCab: TPedidoCab);                                                
+begin                                                                                                 
+  if ValidaDados(pPedidoCab) then                                                       
+  begin                                                                                               
+    with TRepositorioPedidoCab.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Insert(pPedidoCab);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroPedidoCab.Update(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pPedidoCab: TPedidoCab);                                                
+begin                                                                                                 
+  if ValidaDados(pPedidoCab) then                                                       
+  begin                                                                                               
+    with TRepositorioPedidoCab.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Update(pPedidoCab);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroPedidoCab.Delete(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pPedidoCab: TPedidoCab);                                                
+begin                                                                                                 
+  if ValidaDados(pPedidoCab) then                                                       
+  begin                                                                                               
+    with TRepositorioPedidoCab.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Delete(pPedidoCab);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+end.                                                                                                  

@@ -1,0 +1,202 @@
+unit uCadCliente;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+  TFrmCadClientes = class(TForm)
+    EdCPF: TEdit;
+    EdNome: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Button1: TButton;
+    BtGravar: TButton;
+    BtCons: TButton;
+    Button2: TButton;
+    BtExcluir: TButton;
+    PnlCons: TPanel;
+    Label3: TLabel;
+    EdConsCPF: TEdit;
+    procedure Button1Click(Sender: TObject);
+    procedure BtGravarClick(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure BtExcluirClick(Sender: TObject);
+    procedure Limpar;
+    procedure AtivaCampos;
+    procedure DesativaCampos;
+    procedure EdConsCPFEnter(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmCadClientes: TFrmCadClientes;
+  Acao: string;
+
+
+
+implementation
+
+  uses ucliente, UCadastroCliente, URepositorioCliente ;
+
+{$R *.dfm}
+
+procedure TFrmCadClientes.AtivaCampos;
+begin
+ EdCPF.Enabled:=true;
+ EdNome.Enabled:=true;
+ EdCPF.SetFocus;
+end;
+
+procedure TFrmCadClientes.BtExcluirClick(Sender: TObject);
+var Cliente: TCliente;
+    CadCliente : TCadastroCliente;
+begin
+
+  if Acao = 'Consulta' then
+  begin
+     If MessageDlg('Você tem certeza que deseja excluir este cliente?',mtConfirmation,[mbyes,mbno],0)=mryes then
+     begin
+
+           Cliente:= TCliente.Create;
+           CadCliente:= TCadastroCliente.Create;
+           try
+             Cliente.Nome:= EdNome.Text;
+             Cliente.Documento:= EdCPF.Text;
+
+             try
+             CadCliente.Delete(Cliente);
+             except
+              on E: Exception do
+              begin
+                 raise Exception.Create(E.Message);
+              end;
+            end;
+
+           finally
+              FreeAndNil(Cliente);
+              FreeAndNil(CadCliente);
+           end;
+
+           ShowMessage('Cliente Excluído com Sucesso!');
+           Limpar;
+
+     end;
+  end;
+
+
+
+end;
+
+procedure TFrmCadClientes.BtGravarClick(Sender: TObject);
+var Cliente: TCliente;
+    CadCliente : TCadastroCliente;
+begin
+   Cliente:= TCliente.Create;
+   CadCliente:= TCadastroCliente.Create;
+
+   try
+     Cliente.Nome:= EdNome.Text;
+     Cliente.Documento:= EdCPF.Text;
+
+     if Acao = 'Novo' then
+       CadCliente.Insert(Cliente)
+     else
+     if Acao = 'Editar' then
+     begin
+       CadCliente.Update(Cliente);
+     end;
+
+   finally
+    FreeAndNil(Cliente);
+    FreeAndNil(CadCliente);
+   end;
+
+   Limpar;
+
+end;
+
+procedure TFrmCadClientes.Button1Click(Sender: TObject);
+begin
+ AtivaCampos;
+ Limpar;
+ Acao:='Novo';
+end;
+
+
+
+
+
+
+
+
+
+
+procedure TFrmCadClientes.Button2Click(Sender: TObject);
+begin
+  if Acao = 'Consulta' then
+  begin
+    EdCPF.Enabled:=true;
+    EdNome.Enabled:=true;
+    EdNome.SetFocus;
+    Acao:='Editar';
+  end;
+
+
+end;
+
+procedure TFrmCadClientes.DesativaCampos;
+begin
+ EdCPF.Enabled:=false;
+ EdNome.Enabled:=false;
+end;
+
+procedure TFrmCadClientes.EdConsCPFEnter(Sender: TObject);
+var Cliente: TCliente;
+    RepCliente : TRepositorioCliente;
+
+begin
+  if trim (EdConsCPF.Text) <> ''then
+  begin
+
+     Cliente:= TCliente.Create;
+     RepCliente := TRepositorioCliente.Create;
+
+     try
+        try
+          Cliente:= RepCliente.getCliente(EdCPF.Text);
+        except
+          on E: Exception do
+          begin
+            raise Exception.Create(E.Message);
+          end;
+        end;
+
+        EdNome.Text:= Cliente.Nome;
+
+     finally
+      FreeAndNil(Cliente);
+      FreeAndNil(RepCliente);
+     end;
+
+
+    DesativaCampos;
+    Acao:= 'Consulta'
+  end;
+
+end;
+
+procedure TFrmCadClientes.Limpar;
+begin
+ EdCPF.Clear;
+ EdNome.Clear;
+ EdCPF.SetFocus;
+
+end;
+
+end.

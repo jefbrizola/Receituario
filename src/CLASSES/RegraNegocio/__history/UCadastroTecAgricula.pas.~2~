@@ -1,0 +1,95 @@
+{
+ -------------------------------------------------------------------------------
+ -- Objetivo....: Classe de regra de negocio de objetos TTecAgricula
+ -- Autor.......: Jeferson Brizola
+ -------------------------------------------------------------------------------
+}
+
+
+
+unit UntCadastroTecAgricula;
+
+interface
+
+uses Classes, SysUtils, UntUsuario, UntRepositorioTecAgricula, UntTecAgricula;
+
+type
+  TCadastroTecAgricula = class
+  private
+    function ValidaDados(pTecAgricula: TTecAgricula):boolean; 
+  public
+    procedure Insert(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pTecAgricula: TTecAgricula);
+    procedure Update(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pTecAgricula: TTecAgricula);
+    procedure Delete(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pTecAgricula: TTecAgricula);
+  end; 
+
+implementation 
+                                                                                                      
+{ TCadastroTecAgricula } 
+                                                                                                      
+function TCadastroTecAgricula.ValidaDados(pTecAgricula: TTecAgricula):boolean; 
+begin                                                                                                 
+  Result := true;                                                                                     
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroTecAgricula.Insert(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pTecAgricula: TTecAgricula);                                                
+begin                                                                                                 
+  if ValidaDados(pTecAgricula) then                                                       
+  begin                                                                                               
+    with TRepositorioTecAgricula.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Insert(pTecAgricula);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroTecAgricula.Update(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pTecAgricula: TTecAgricula);                                                
+begin                                                                                                 
+  if ValidaDados(pTecAgricula) then                                                       
+  begin                                                                                               
+    with TRepositorioTecAgricula.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Update(pTecAgricula);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroTecAgricula.Delete(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pTecAgricula: TTecAgricula);                                                
+begin                                                                                                 
+  if ValidaDados(pTecAgricula) then                                                       
+  begin                                                                                               
+    with TRepositorioTecAgricula.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Delete(pTecAgricula);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+end.                                                                                                  

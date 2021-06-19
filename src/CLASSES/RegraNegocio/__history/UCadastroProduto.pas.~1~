@@ -1,0 +1,101 @@
+{
+ -------------------------------------------------------------------------------
+ -- Projeto.....: SFC
+ -- Unit........: UntCadastroProduto
+ -- Objetivo....: Classe de regra de negocio de objetos TProduto
+ -- Autor.......: Jeferson Brizola
+ -- Data........: segunda-feira, 14 de junho de 2021
+ -- Classes.....: TCadastroProduto, UntRepositorioProduto, UntProduto
+ -- Tabelas.....:
+ -- Procedures..:
+ -------------------------------------------------------------------------------
+}
+
+
+
+unit UntCadastroProduto;
+
+interface
+
+uses Classes, SysUtils, UntUsuario, UntRepositorioProduto, UntProduto;
+
+type
+  TCadastroProduto = class
+  private
+    function ValidaDados(pProduto: TProduto):boolean; 
+  public
+    procedure Insert(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pProduto: TProduto);
+    procedure Update(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pProduto: TProduto);
+    procedure Delete(const pDatabase: string; Formulario : TComponentName; Usuario : TUsuario; 
+                     Log: boolean; pProduto: TProduto);
+  end; 
+
+implementation 
+                                                                                                      
+{ TCadastroProduto } 
+                                                                                                      
+function TCadastroProduto.ValidaDados(pProduto: TProduto):boolean; 
+begin                                                                                                 
+  Result := true;                                                                                     
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroProduto.Insert(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pProduto: TProduto);                                                
+begin                                                                                                 
+  if ValidaDados(pProduto) then                                                       
+  begin                                                                                               
+    with TRepositorioProduto.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Insert(pProduto);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroProduto.Update(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pProduto: TProduto);                                                
+begin                                                                                                 
+  if ValidaDados(pProduto) then                                                       
+  begin                                                                                               
+    with TRepositorioProduto.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Update(pProduto);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+procedure TCadastroProduto.Delete(const pDatabase: string;                            
+  Formulario: TComponentName; Usuario: TUsuario; Log: boolean;                                        
+  pProduto: TProduto);                                                
+begin                                                                                                 
+  if ValidaDados(pProduto) then                                                       
+  begin                                                                                               
+    with TRepositorioProduto.Create(pDatabase, Formulario, Usuario, Log) do           
+    begin                                                                                             
+      try                                                                                             
+        Delete(pProduto);                                                                 
+      finally                                                                                         
+        Free;                                                                                         
+      end;                                                                                            
+    end;                                                                                              
+  end                                                                                                 
+  else                                                                                                
+    raise Exception.Create('Dados inválidos!!!');                                 
+end;                                                                                                  
+                                                                                                      
+end.                                                                                                  

@@ -1,0 +1,80 @@
+object FrmCadClientes: TFrmCadClientes
+  Left = 0
+  Top = 0
+  Caption = 'Cadastro de Clientes'
+  ClientHeight = 146
+  ClientWidth = 462
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 24
+    Top = 12
+    Width = 19
+    Height = 13
+    Caption = 'CPF'
+  end
+  object Label2: TLabel
+    Left = 12
+    Top = 52
+    Width = 27
+    Height = 13
+    Caption = 'Nome'
+  end
+  object EdCPF: TEdit
+    Left = 49
+    Top = 8
+    Width = 121
+    Height = 21
+    Enabled = False
+    TabOrder = 0
+  end
+  object EdNome: TEdit
+    Left = 47
+    Top = 49
+    Width = 290
+    Height = 21
+    Enabled = False
+    TabOrder = 1
+  end
+  object Button1: TButton
+    Left = 223
+    Top = 96
+    Width = 75
+    Height = 25
+    Caption = 'Novo'
+    TabOrder = 2
+    OnClick = Button1Click
+  end
+  object BtGravar: TButton
+    Left = 320
+    Top = 96
+    Width = 75
+    Height = 25
+    Caption = 'Gravar'
+    TabOrder = 3
+    OnClick = BtGravarClick
+  end
+  object BtCons: TButton
+    Left = 46
+    Top = 96
+    Width = 75
+    Height = 25
+    Caption = 'Consultar'
+    TabOrder = 4
+  end
+  object Button2: TButton
+    Left = 134
+    Top = 96
+    Width = 75
+    Height = 25
+    Caption = 'Editar'
+    TabOrder = 5
+  end
+end

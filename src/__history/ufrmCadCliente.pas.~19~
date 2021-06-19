@@ -1,0 +1,263 @@
+unit ufrmCadCliente;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons;
+
+type
+  TFrmCadClientes = class(TForm)
+    EdCPF: TEdit;
+    EdNome: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    BtNovo: TButton;
+    BtGravar: TButton;
+    BtCons: TButton;
+    BtEditar: TButton;
+    BtExcluir: TButton;
+    PnlCons: TPanel;
+    Label3: TLabel;
+    EdConsCPF: TEdit;
+    BtnOk: TButton;
+    procedure BtNovoClick(Sender: TObject);
+    procedure BtGravarClick(Sender: TObject);
+    procedure BtEditarClick(Sender: TObject);
+    procedure BtExcluirClick(Sender: TObject);
+    procedure Limpar;
+    procedure AtivaCampos;
+    procedure DesativaCampos;
+    procedure BtConsClick(Sender: TObject);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BtnOkClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmCadClientes: TFrmCadClientes;
+  Acao: string;
+
+
+
+implementation
+
+  uses UCliente, UCadastroCliente, URepositorioCliente ;
+
+{$R *.dfm}
+
+procedure TFrmCadClientes.AtivaCampos;
+begin
+ EdCPF.Enabled:=true;
+ EdNome.Enabled:=true;
+ EdCPF.SetFocus;
+end;
+
+procedure TFrmCadClientes.BitBtn1Click(Sender: TObject);
+var Cliente: TCliente;
+    RepCliente : TRepositorioCliente;
+begin
+
+  if trim (EdConsCPF.Text) <> ''then
+  begin
+
+     Cliente:= TCliente.Create;
+     RepCliente := TRepositorioCliente.Create;
+
+     try
+        try
+          Cliente:= RepCliente.getCliente(EdConsCPF.Text);
+        except
+          on E: Exception do
+          begin
+            raise Exception.Create(E.Message);
+          end;
+        end;
+
+        EdCPF.Text:= Cliente.Documento;
+        EdNome.Text:= Cliente.Nome;
+
+     finally
+      FreeAndNil(Cliente);
+      FreeAndNil(RepCliente);
+     end;
+
+
+    DesativaCampos;
+    Acao:= 'Consulta'
+  end;
+
+
+
+
+
+
+
+end;
+
+procedure TFrmCadClientes.BtConsClick(Sender: TObject);
+begin
+  Limpar;
+  PnlCons.Visible:= true;
+  EdConsCPF.SetFocus;
+end;
+
+procedure TFrmCadClientes.BtExcluirClick(Sender: TObject);
+var Cliente: TCliente;
+    CadCliente : TCadastroCliente;
+begin
+
+  if Acao = 'Consulta' then
+  begin
+     If MessageDlg('Você tem certeza que deseja excluir este cliente?',mtConfirmation,[mbyes,mbno],0)=mryes then
+     begin
+
+           Cliente:= TCliente.Create;
+           CadCliente:= TCadastroCliente.Create;
+           try
+             Cliente.Nome:= EdNome.Text;
+             Cliente.Documento:= EdCPF.Text;
+
+             try
+             CadCliente.Delete(Cliente);
+             except
+              on E: Exception do
+              begin
+                 raise Exception.Create(E.Message);
+              end;
+            end;
+
+           finally
+              FreeAndNil(Cliente);
+              FreeAndNil(CadCliente);
+           end;
+
+           ShowMessage('Cliente Excluído com Sucesso!');
+           Limpar;
+           DesativaCampos;
+           Acao:= '';
+
+     end;
+  end;
+
+
+
+end;
+
+procedure TFrmCadClientes.BtGravarClick(Sender: TObject);
+var Cliente: TCliente;
+    CadCliente : TCadastroCliente;
+begin
+   if (Acao = 'Novo') or (Acao = 'Editar') then
+   begin
+       Cliente:= TCliente.Create;
+       CadCliente:= TCadastroCliente.Create;
+
+      if (trim(EdCPF.Text)='') or (trim(EdNome.text)='') then
+       begin
+          ShowMessage('Informe o CPF e Nome');
+          EdCPF.SetFocus;
+          Exit;
+       end;
+
+       try
+         Cliente.Nome:= EdNome.Text;
+         Cliente.Documento:= EdCPF.Text;
+
+         if Acao = 'Novo' then
+           CadCliente.Insert(Cliente)
+         else
+         if Acao = 'Editar' then
+         begin
+           CadCliente.Update(Cliente);
+         end;
+
+       finally
+        FreeAndNil(Cliente);
+        FreeAndNil(CadCliente);
+       end;
+
+       Limpar;
+       DesativaCampos;
+       Acao:= '';
+
+       ShowMessage('Gravado com Sucesso!');
+   end;
+
+end;
+
+procedure TFrmCadClientes.BtNovoClick(Sender: TObject);
+begin
+ AtivaCampos;
+ Limpar;
+ Acao:='Novo';
+end;
+
+
+
+procedure TFrmCadClientes.BtnOkClick(Sender: TObject);
+var Cliente: TCliente;
+    RepCliente : TRepositorioCliente;
+begin
+if trim (EdConsCPF.Text) <> ''then
+  begin
+
+     Cliente:= TCliente.Create;
+     RepCliente := TRepositorioCliente.Create;
+
+     try
+        try
+          Cliente:= RepCliente.getCliente(EdConsCPF.Text);
+        except
+          on E: Exception do
+          begin
+            raise Exception.Create(E.Message);
+          end;
+        end;
+
+        EdCPF.Text:= Cliente.Documento;
+        EdNome.Text:= Cliente.Nome;
+
+     finally
+      FreeAndNil(Cliente);
+      FreeAndNil(RepCliente);
+     end;
+
+
+    DesativaCampos;
+    Acao:= 'Consulta'
+  end;
+end;
+
+procedure TFrmCadClientes.BtEditarClick(Sender: TObject);
+begin
+  if Acao = 'Consulta' then
+  begin
+    EdNome.Enabled:=true;
+    EdNome.SetFocus;
+    Acao:='Editar';
+  end;
+
+
+end;
+
+procedure TFrmCadClientes.DesativaCampos;
+begin
+ EdCPF.Enabled:=false;
+ EdNome.Enabled:=false;
+ PnlCons.Visible:= False;
+end;
+
+procedure TFrmCadClientes.Limpar;
+begin
+ EdCPF.Clear;
+ EdNome.Clear;
+ EdConsCPF.Clear ;
+ PnlCons.Visible:= false;
+
+end;
+
+end.

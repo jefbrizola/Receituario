@@ -1,0 +1,105 @@
+unit uProduto;
+
+interface
+
+
+
+type
+  TProduto = class
+  strict private
+
+    FCODIGO    : String;
+    FCONTROLE  : String;
+    FPRECO     : double;
+    FDESCRICAO : string;
+
+    procedure SetNome(val : String);
+    function GetNome : String;
+
+    procedure SetDocumento(val : String);
+    function GetDocumento : String;
+
+    procedure SetDocumentoReg(val : String);
+    function GetDocumentoReg : String;
+
+  public
+
+
+
+    property CODIGO :String read FCODIGO write FCODIGO;
+
+
+    function ValidaDocumento(documento : string): boolean;
+
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+implementation
+
+function TProduto.GetDocumentoReg: String;
+begin
+  Result := FDocumentoReg;
+end;
+
+procedure TProduto.SetDocumentoReg(val : String);
+begin
+  FDocumentoReg := val;
+end;
+
+
+function TProduto.GetDocumento: String;
+begin
+  Result := FDocumento;
+end;
+
+procedure TProduto.SetDocumento(val : String);
+begin
+  FDocumento := val;
+end;
+
+
+function TProduto.GetNome: String;
+begin
+  Result := FNome;
+end;
+
+procedure TProduto.SetNome(val : String);
+begin
+  FNome := val;
+end;
+
+function TProduto.ValidaDocumento(documento : string): boolean;
+begin
+  Result := false;
+  if Length(documento) > 14 then
+  begin
+    //é um CNPJ
+    if documento <> '' then
+      Result := true;
+  end
+  else
+  begin
+    //é um CPF
+    if documento <> '' then
+      Result := true;
+  end;  
+  
+
+end;
+
+
+
+constructor TProduto.Create;
+begin
+	inherited Create;
+
+end;
+
+destructor TProduto.Destroy;
+begin
+
+	inherited Destroy;
+end;
+
+end.

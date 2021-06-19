@@ -1,0 +1,113 @@
+object FrmCadClientes: TFrmCadClientes
+  Left = 0
+  Top = 0
+  Caption = 'Cadastro de Clientes'
+  ClientHeight = 160
+  ClientWidth = 434
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 24
+    Top = 12
+    Width = 19
+    Height = 13
+    Caption = 'CPF'
+  end
+  object Label2: TLabel
+    Left = 12
+    Top = 52
+    Width = 27
+    Height = 13
+    Caption = 'Nome'
+  end
+  object EdCPF: TEdit
+    Left = 49
+    Top = 8
+    Width = 121
+    Height = 21
+    Enabled = False
+    TabOrder = 0
+  end
+  object EdNome: TEdit
+    Left = 47
+    Top = 49
+    Width = 290
+    Height = 21
+    Enabled = False
+    TabOrder = 1
+  end
+  object Button1: TButton
+    Left = 13
+    Top = 104
+    Width = 75
+    Height = 25
+    Caption = 'Novo'
+    TabOrder = 2
+    OnClick = Button1Click
+  end
+  object BtGravar: TButton
+    Left = 339
+    Top = 104
+    Width = 75
+    Height = 25
+    Caption = 'Gravar'
+    TabOrder = 3
+    OnClick = BtGravarClick
+  end
+  object BtCons: TButton
+    Left = 94
+    Top = 104
+    Width = 75
+    Height = 25
+    Caption = 'Consultar'
+    TabOrder = 4
+  end
+  object Button2: TButton
+    Left = 258
+    Top = 104
+    Width = 75
+    Height = 25
+    Caption = 'Editar'
+    TabOrder = 5
+    OnClick = Button2Click
+  end
+  object BtExcluir: TButton
+    Left = 175
+    Top = 104
+    Width = 75
+    Height = 25
+    Caption = 'Excluir'
+    TabOrder = 6
+    OnClick = BtExcluirClick
+  end
+  object PnlCons: TPanel
+    Left = 94
+    Top = 26
+    Width = 265
+    Height = 65
+    TabOrder = 7
+    Visible = False
+    object Label3: TLabel
+      Left = 88
+      Top = 9
+      Width = 69
+      Height = 13
+      Caption = 'Informe o CPF'
+    end
+    object EdConsCPF: TEdit
+      Left = 51
+      Top = 28
+      Width = 153
+      Height = 21
+      TabOrder = 0
+      OnEnter = EdConsCPFEnter
+    end
+  end
+end
